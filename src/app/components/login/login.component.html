@@ -11,15 +11,15 @@
                     <div class="panel-body p-3">
                         <form [formGroup]="loginForm">
                             <div class="form-group pt-3">
-                                <div class="input-field">
+                                <div class="input-field"    [class.error]="loginForm.controls['username'].dirty && loginForm.hasError('required','username')">
                                     <span class="fa fa-user p-2"> </span>
                                     <input type="text" placeholder="Username" formControlName="username">
                                 </div>
                             </div>
-                            <small class="text-danger">Username is required</small>
+                            <small *ngIf="loginForm.controls['username'].dirty && loginForm.hasError('required','username')" class="text-danger">Username is required</small>
 
                             <div class="form-group pt-3">
-                                <div class="input-field">
+                                <div class="input-field"  [class.error]="loginForm.controls['password'].dirty && loginForm.hasError('required','password')">
                                     <span class="fa fa-lock p-2"> </span>
                                     <input [type]="type" placeholder="Password" formControlName="password">
                                     <span id="eye"
@@ -27,11 +27,11 @@
                                
                                 </div>
                             </div>
-                            <small  class="text-danger">Password is required</small>
+                            <small  *ngIf="loginForm.controls['password'].dirty && loginForm.hasError('required','password')"   class="text-danger">Password is required</small>
                             <div class="form-inline fr mt-4 p-2">
                                 <a id="forget" class="font-weight-bold">Forgot Password?</a>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-black mt-4 w-100 ">submit   </button>
+                            <button (click)="onSubmit()" [disabled]="loginForm.invalid" type="submit" class="btn btn-primary btn-black mt-4 w-100 ">submit   </button>
                             <div class="text-center pt-4 text-muted">Don't have account? <a id="forget" class="font-weight-bold" routerLink="/signup">register here</a></div>
                         </form>
                     </div>
