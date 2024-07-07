@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import validateForm from '../../helpers/validateForm';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +15,7 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
 
 
-  constructor(public fb: FormBuilder) { }
+  constructor(public fb: FormBuilder,private auth:AuthService,private router:Router) { }
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
     this.loginForm = this.fb.group({
@@ -34,12 +36,25 @@ export class LoginComponent implements OnInit {
     this.isText ? this.type = "text" : this.type = "password";
   }
 
-  onSubmit() {
-    // throw new Error('Method not implemented.');
+  onLogin() {
+    // throw new Error('Method not implemented.');  
     if (this.loginForm.valid)
     {
       //send to db
-      console.log(this.loginForm.value);
+      this.auth.login(this.loginForm.value)
+        .subscribe({
+          next: (res) => {
+            console.log(res.message); // res.message is the message from the server
+            this.loginForm.reset();
+            this.router.navigate(['dashboard']); // redirect to dashboard
+
+          },
+          error: (err) => {
+            console.log(err ?. err.message); // err.message is the message from the server
+
+          }
+        })
+      
     }
     else {
       //throw error using toaster
