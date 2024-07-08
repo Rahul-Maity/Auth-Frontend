@@ -8,6 +8,9 @@ import { SignupComponent } from './components/signup/signup.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { NgToastModule } from 'ng-angular-popup';
+import { ToastrModule } from 'ngx-toastr';
+// import { ɵBrowserAnimationBuilder } from '@angular/animations';
 
 @NgModule({
   declarations: [
@@ -20,7 +23,11 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgToastModule,
+   ToastrModule.forRoot()
+    
+
   ],
   providers: [],
   bootstrap: [AppComponent]

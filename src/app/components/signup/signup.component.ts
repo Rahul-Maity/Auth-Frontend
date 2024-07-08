@@ -4,6 +4,7 @@ import validateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -31,7 +32,7 @@ export class SignupComponent implements OnInit {
   isText: boolean = false;
 
 
-constructor(private fb:FormBuilder,private auth:AuthService,private http:HttpClient,private router:Router){}
+constructor(private fb:FormBuilder,private auth:AuthService,private http:HttpClient,private router:Router,private toast:ToastrService){}
   hideShowPass() {
    
     this.isText = !this.isText;
@@ -45,14 +46,23 @@ constructor(private fb:FormBuilder,private auth:AuthService,private http:HttpCli
     {
       this.auth.signup(this.signupForm.value).subscribe(
         {
-          next:(res)=>{
+          next: (res) => {
+            this.toast.success('Success', res.message, {
+              timeOut: 3000,
+            });
             console.log(res.message); // to show message
             this.signupForm.reset();
             this.router.navigate(['login']);
           }
           ,
           error: (err) => { 
-            console.log(err?.err.message);
+
+            const errorMessage = err?.error?.message || 'An unknown error occurred.';
+            this.toast.error('Failed', errorMessage, {
+              timeOut: 3000,
+            });
+            // alert(err?.err.message);
+
           }
         }
       )
@@ -61,6 +71,9 @@ constructor(private fb:FormBuilder,private auth:AuthService,private http:HttpCli
     else {
       // throw error
       validateForm.validateAllFormFields( this.signupForm );
+      this.toast.error('Error', 'invalid form', {
+        timeOut: 3000,
+      });
 
       console.log('invalid form');
 

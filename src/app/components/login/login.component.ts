@@ -3,6 +3,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import validateForm from '../../helpers/validateForm';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { NgToastService } from 'ng-angular-popup';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,7 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
 
 
-  constructor(public fb: FormBuilder,private auth:AuthService,private router:Router) { }
+  constructor(public fb: FormBuilder, private auth: AuthService, private router: Router, private toast:ToastrService) { }
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
     this.loginForm = this.fb.group({
@@ -44,12 +46,18 @@ export class LoginComponent implements OnInit {
       this.auth.login(this.loginForm.value)
         .subscribe({
           next: (res) => {
-            console.log(res.message); // res.message is the message from the server
+            this.toast.success('Success', res.message, {
+              timeOut:3000
+            })
+             console.log(res.message); // res.message is the message from the server
             this.loginForm.reset();
             this.router.navigate(['dashboard']); // redirect to dashboard
 
           },
           error: (err) => {
+            this.toast.error('Failed', err.message, {
+              timeOut:3000
+            })
             console.log(err ?. err.message); // err.message is the message from the server
 
           }
@@ -58,6 +66,9 @@ export class LoginComponent implements OnInit {
     }
     else {
       //throw error using toaster
+      this.toast.error('Failed', 'this form is  invalid', {
+        timeOut:3000
+      })
       console.log('this form is  invalid');
       validateForm.validateAllFormFields(this.loginForm);
 
