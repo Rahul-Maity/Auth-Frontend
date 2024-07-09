@@ -8,7 +8,8 @@ import { SignupComponent } from './components/signup/signup.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { NgToastModule } from 'ng-angular-popup';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { ToastrModule } from 'ngx-toastr';
 // import { ɵBrowserAnimationBuilder } from '@angular/animations';
 
@@ -24,7 +25,8 @@ import { ToastrModule } from 'ngx-toastr';
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    NgToastModule,
+    
+    BrowserAnimationsModule,
    ToastrModule.forRoot()
     
 
