@@ -18,7 +18,7 @@ export class AuthService {
     return this.http.post<any>(`${this.baseUrl}authenticate`, loginObj)
       .pipe(
         tap(res => {
-          localStorage.setItem('authToken', res.Token);
+          localStorage.setItem('authToken', res.token);
         })
       );
    

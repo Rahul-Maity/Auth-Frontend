@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
       this.auth.login(this.loginForm.value)
         .subscribe({
           next: (res) => {
-            this.auth.storeToken(res.Token);
+            this.auth.storeToken(res.token);
             this.toast.success('Success', res.message, {
               timeOut:3000
             })
