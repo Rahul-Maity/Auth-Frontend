@@ -6,12 +6,13 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ToastrModule } from 'ngx-toastr';
 import { tokenInterceptor } from './interceptors/token.interceptor';
+import { AuthService } from './services/auth.service';
 // import { ɵBrowserAnimationBuilder } from '@angular/animations';
 
 @NgModule({
@@ -32,11 +33,11 @@ import { tokenInterceptor } from './interceptors/token.interceptor';
     
 
   ],
-  providers: [{
-    provide: HTTP_INTERCEPTORS,
-    useValue: tokenInterceptor,
-    multi:true
-  }],
+  providers: [
+    provideHttpClient(
+      withInterceptors([tokenInterceptor])
+    ),
+ ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
