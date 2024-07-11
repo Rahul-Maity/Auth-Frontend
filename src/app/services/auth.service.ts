@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,24 +14,30 @@ export class AuthService {
     return this.http.post<any>(`${this.baseUrl}register`, userObj);
   }
 
-  login(loginObj: any) {
-    return this.http.post<any>(`${this.baseUrl}authenticate`, loginObj);
+  login(loginObj: any):Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}authenticate`, loginObj)
+      .pipe(
+        tap(res => {
+          localStorage.setItem('authToken', res.Token);
+        })
+      );
+   
   }
   signOut() {
     localStorage.clear();
     this.router.navigate(['/login']);
 }
-  storeToken(tokenValue: string)
+  storeToken(tokenValue: string):void
   {
-    localStorage.setItem('token', tokenValue);
+    localStorage.setItem('authToken', tokenValue);
 
   }
-  getToken()
+  getToken():string|null
   {
-    return  localStorage.getItem('token');
+    return  localStorage.getItem('authToken');
 
   }
   isLoggedIn(): boolean{
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('authToken');
   }
 }

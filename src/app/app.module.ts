@@ -11,7 +11,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ToastrModule } from 'ngx-toastr';
-import { tokenInterceptor } from './interceptors/token.interceptor';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 import { AuthService } from './services/auth.service';
 // import { ɵBrowserAnimationBuilder } from '@angular/animations';
 
@@ -34,9 +34,11 @@ import { AuthService } from './services/auth.service';
 
   ],
   providers: [
-    provideHttpClient(
-      withInterceptors([tokenInterceptor])
-    ),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
  ],
   bootstrap: [AppComponent]
 })

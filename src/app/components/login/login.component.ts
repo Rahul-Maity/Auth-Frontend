@@ -42,17 +42,19 @@ export class LoginComponent implements OnInit {
     // throw new Error('Method not implemented.');  
     if (this.loginForm.valid)
     {
+     
       //send to db
       this.auth.login(this.loginForm.value)
         .subscribe({
           next: (res) => {
+            this.auth.storeToken(res.Token);
             this.toast.success('Success', res.message, {
               timeOut:3000
             })
 
              console.log(res.message); // res.message is the message from the server
             this.loginForm.reset();
-            this.auth.storeToken(res.Token);
+            
             this.router.navigate(['dashboard']); // redirect to dashboard
 
           },
