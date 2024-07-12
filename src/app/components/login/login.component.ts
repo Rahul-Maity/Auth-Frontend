@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import { ToastrService } from 'ngx-toastr';
+import { UserStoreService } from '../../services/user-store.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
 
 
-  constructor(public fb: FormBuilder, private auth: AuthService, private router: Router, private toast:ToastrService) { }
+  constructor(public fb: FormBuilder, private auth: AuthService, private router: Router, private toast:ToastrService,private userStore:UserStoreService) { }
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
     this.loginForm = this.fb.group({
@@ -48,6 +49,9 @@ export class LoginComponent implements OnInit {
         .subscribe({
           next: (res) => {
             this.auth.storeToken(res.token);
+            const tokenPayload = this.auth.decodedToken();
+            this.userStore.setFullnameForStore(tokenPayload.unique_name);
+            this.userStore.setRoleForStore(tokenPayload.role);
             this.toast.success('Success', res.message, {
               timeOut:3000
             })
