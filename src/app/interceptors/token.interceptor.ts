@@ -34,8 +34,7 @@ export class TokenInterceptor implements HttpInterceptor {
            // this.toast.error('Token is expired,login again', 'Error');
             //this.router.navigate(['/login']);
 
-            //handle
-
+           return this.handleUnauthorizdError(req, next);
           }
         }
         return throwError(()=>new Error("some other error occured"))
@@ -43,16 +42,29 @@ export class TokenInterceptor implements HttpInterceptor {
     );
   }
 
-  handleUnauthorizdError() {
+  handleUnauthorizdError(req:HttpRequest<any>,next:HttpHandler) {
    
-    let tokenapiModel = new TokenApiModel();
+    let tokenapiModel = new TokenApiModel();  
     tokenapiModel.accessToken = this.auth.getToken()!;
     tokenapiModel.refreshToken = this.auth.getRefreshToken()!;
 
     return this.auth.renewToken(tokenapiModel)
       .pipe(
         switchMap((data: TokenApiModel) => {
-          
+          this.auth.storeRefreshToken(data.refreshToken);
+          this.auth.storeToken(data.accessToken);
+          req = req.clone({
+            setHeaders: { Authorization: `Bearer ${data.accessToken}` }
+          });
+          return next.handle(req);
+
+        }),
+
+        catchError((err) => {
+          return throwError(() => {
+             this.toast.error('Token is expired,login again', 'Error');
+            this.router.navigate(['/login']);
+          })
         })
       )
 
