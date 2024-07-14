@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import { ToastrService } from 'ngx-toastr';
 import { UserStoreService } from '../../services/user-store.service';
+import { ResetPasswordService } from '../../services/reset-password.service';
 
 @Component({
   selector: 'app-login',
@@ -13,12 +14,14 @@ import { UserStoreService } from '../../services/user-store.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
-  
+
+
 
   loginForm!: FormGroup;
+  public resetPasswordEmail!: string;
+  public isValidEmail!: boolean;
 
-
-  constructor(public fb: FormBuilder, private auth: AuthService, private router: Router, private toast:ToastrService,private userStore:UserStoreService) { }
+  constructor(public fb: FormBuilder, private auth: AuthService, private router: Router, private toast: ToastrService, private userStore: UserStoreService, private resetService: ResetPasswordService) { }
   ngOnInit(): void {
     // throw new Error('Method not implemented.');
     this.loginForm = this.fb.group({
@@ -41,9 +44,8 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     // throw new Error('Method not implemented.');  
-    if (this.loginForm.valid)
-    {
-     
+    if (this.loginForm.valid) {
+
       //send to db
       this.auth.login(this.loginForm.value)
         .subscribe({
@@ -55,29 +57,29 @@ export class LoginComponent implements OnInit {
             this.userStore.setFullnameForStore(tokenPayload.unique_name);
             this.userStore.setRoleForStore(tokenPayload.role);
             this.toast.success('Success', res.message, {
-              timeOut:3000
+              timeOut: 3000
             })
 
-             console.log(res.message); // res.message is the message from the server
+            console.log(res.message); // res.message is the message from the server
             this.loginForm.reset();
-            
+
             this.router.navigate(['dashboard']); // redirect to dashboard
 
           },
           error: (err) => {
             this.toast.error('Failed', err.message, {
-              timeOut:3000
+              timeOut: 3000
             })
-            console.log(err ?. err.message); // err.message is the message from the server
+            console.log(err?.err.message); // err.message is the message from the server
 
           }
         })
-      
+
     }
     else {
       //throw error using toaster
       this.toast.error('Failed', 'this form is  invalid', {
-        timeOut:3000
+        timeOut: 3000
       })
       console.log('this form is  invalid');
       validateForm.validateAllFormFields(this.loginForm);
@@ -85,8 +87,38 @@ export class LoginComponent implements OnInit {
 
     }
   }
+  checkValidEmail(event: string) {
+    const value = event;
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    this.isValidEmail = pattern.test(value);
+    return this.isValidEmail;
+  }
 
-  
+  confirmToSend() {
+    if (this.checkValidEmail(this.resetPasswordEmail)) {
+      console.log(this.resetPasswordEmail);
 
+      //api call to be done
+      this.resetService.sendResetPasswordLink(this.resetPasswordEmail)
+        .subscribe(
+          {
+            next: (res => {
+              this.toast.error('success', 'Reset password link sent to your email', {
+
+                timeOut: 3000
+              })
+              this.resetPasswordEmail = "";
+              const buttonRef = document.getElementById('closeBtn');
+              buttonRef?.click();
+            }),
+            error: (err => {
+              this.toast.error('Failed', err.message, {
+                timeOut: 3000
+              })
+            })
+          }
+        )
+    }
+  }
 
 }
